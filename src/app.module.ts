@@ -15,15 +15,27 @@ import { join } from 'path';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { ModelsModule } from '@common/models/models.module';
 
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { UsersResolver } from './users/users.resolver';
+import { UsersModule } from './users/user.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
     ModelsModule,
+    UsersModule,
     UserModule,
     ApiModule,
     CachingModule,
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      sortSchema: true,
+      playground: true,
+      debug: false,
+    }),
     MailerModule.forRoot({
       transport: {
         service: 'gmail',
@@ -62,6 +74,7 @@ import { ModelsModule } from '@common/models/models.module';
       useClass: AllExceptionFilter,
     },
     Caching,
+    UsersResolver,
   ],
 })
 export class AppModule {}
