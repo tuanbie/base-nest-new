@@ -3,5 +3,16 @@
 # ------------------------------------------------------
 
 type Query {
-  item: String!
+  getAll: [User!]!
+}
+
+type User {
+  activated: Boolean!
+  email: String!
+  full_name: String!
+  id: String!
+  is_active: Float!
+  password: String!
+  phone: String!
+  roles: String!
 }

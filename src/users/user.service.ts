@@ -2,6 +2,7 @@ import { User } from '@common/models/entity';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { ItemDTO } from './dto/output.dto';
 
 @Injectable()
 export class UsersService {
@@ -9,8 +10,8 @@ export class UsersService {
     @InjectModel(User.name) private readonly userModel: Model<User>,
   ) {}
 
-  async getAll() {
-    const result: any = await this.userModel.findOne({});
-    return result;
+  async getAll(): Promise<User[]> {
+    const results = await this.userModel.find({}).exec();
+    return results;
   }
 }

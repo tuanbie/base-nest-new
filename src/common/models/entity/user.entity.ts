@@ -4,8 +4,8 @@ import { Document } from 'mongoose';
 import { COLLECTION_NAME } from '@common/constants/enum';
 import { Property } from '@common/decorators/property.decorator';
 import { UserRoles } from '@common/constants';
-import { Field } from '@nestjs/graphql';
-
+import { Field, ObjectType } from '@nestjs/graphql';
+@ObjectType()
 @Schema({
   timestamps: {
     createdAt: 'created_at',

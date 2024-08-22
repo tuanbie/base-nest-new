@@ -18,8 +18,11 @@ async function bootstrap() {
 
   app.use(compression());
   app.use(helmet());
-  app.enableCors();
-  app.setGlobalPrefix('api');
+  app.enableCors({
+    origin: true,
+    credentials: true,
+  });
+  app.setGlobalPrefix('');
 
   app.useGlobalPipes(
     new ValidationPipe({

@@ -3,12 +3,12 @@ import { UsersService } from './user.service';
 import { ItemDTO } from './dto/output.dto';
 import { User } from '@common/models/entity';
 
-@Resolver(() => ItemDTO)
+@Resolver(() => User)
 export class UsersResolver {
   constructor(private itemService: UsersService) {}
 
-  @Query(() => [ItemDTO])
-  async getAll(): Promise<[ItemDTO]> {
+  @Query(() => [User])
+  async getAll(): Promise<User[]> {
     return await this.itemService.getAll();
   }
 }
