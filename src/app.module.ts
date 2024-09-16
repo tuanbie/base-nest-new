@@ -20,9 +20,14 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { UsersResolver } from './users/users.resolver';
 import { UsersModule } from './users/user.module';
 
-import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 @Module({
   imports: [
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      context: ({ req, res }) => ({ req, res }),
+      installSubscriptionHandlers: true,
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
     }),
@@ -30,13 +35,7 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
     UserModule,
     ApiModule,
     CachingModule,
-    GraphQLModule.forRoot<ApolloDriverConfig>({
-      driver: ApolloDriver,
-      autoSchemaFile: join(__dirname, 'schema.gql'),
-
-      context: ({ req, res }) => ({ req, res }),
-      installSubscriptionHandlers: true,
-    }),
+    UsersModule,
     MailerModule.forRoot({
       transport: {
         service: 'gmail',
@@ -58,7 +57,6 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
         },
       },
     }),
-    UsersModule,
   ],
 
   providers: [
