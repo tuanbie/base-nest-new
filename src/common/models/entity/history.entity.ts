@@ -17,8 +17,8 @@ export class ActivateHistory extends BaseEntity {
   @Column({ type: 'varchar' })
   text: string;
 
-  @Column({ type: 'varchar' })
-  sendData: string;
+  @Column({ type: 'json' })
+  sendData: object;
 
   @Column({ type: 'varchar' })
   action: string;

@@ -14,6 +14,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { join } from 'path';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { HistoryModule } from '@modules/history/history.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
     UserModule,
     ApiModule,
     CachingModule,
+    HistoryModule,
     MailerModule.forRoot({
       transport: {
         service: 'gmail',
