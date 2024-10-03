@@ -1,5 +1,7 @@
+import { DriverTypeEnum, RoleFilter } from "@common/constants";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsEnum, IsNotEmpty, IsOptional, IsString, NotEquals } from "class-validator";
+import { PaginationDto } from "src/shared/dtos/pagination.dto";
 
 export class CreateUserDto {
     @IsString()
@@ -10,7 +12,7 @@ export class CreateUserDto {
     @IsString()
     @IsNotEmpty()
     @ApiProperty()
-    username: string;
+    email: string;
 
     @IsString()
     @IsNotEmpty()
@@ -23,4 +25,20 @@ export class UpdateUserDto {
     @IsOptional()
     @ApiProperty()
     name: string;
+}
+
+export class FilterUserDto extends PaginationDto {
+    @IsString()
+    @IsOptional()
+    @ApiProperty()
+    sort: string;
+
+    @IsEnum(RoleFilter)
+    @IsNotEmpty()
+    // @NotEquals(RoleFilter[RoleFilter.USER])
+    public role: RoleFilter;
+
+    @IsEnum(DriverTypeEnum)
+    // @NotEquals(RoleFilter[RoleFilter.USER])
+    public driverType: DriverTypeEnum;
 }

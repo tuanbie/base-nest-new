@@ -6,7 +6,7 @@ import { UserService } from "@modules/user/user.service";
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { LoginGoogleDto } from "./dtos/login.dto";
-import { AccountTypeEnum, MESSAGES } from "@common/constants";
+import { AccountTypeEnum, MESSAGES, UserRoles } from "@common/constants";
 import { ExceptionResponse } from "@common/exceptions/response.exception";
 
 @Injectable()
@@ -78,7 +78,7 @@ export class AuthService {
 
     async login(result: ICurrentUser) {
         const payload = {
-            username: result.username,
+            email: result.email,
         };
 
         const token = await this.autoGenerateToken(payload);
@@ -90,21 +90,20 @@ export class AuthService {
     }
 
     async loginWithGoogle(body: LoginGoogleDto) {
-        const { google_id, accountType } = body;
+        const { google_id, accountType, email } = body;
         let user = await this.userService.getUserByGoogleId(google_id);
-
         if (user) {
             const role = user.role["id"];
             const accType = accountType === AccountTypeEnum.CUSTOMER ? 2 : 3;
 
-            if (role !== accType) {
+            if (role !== accType || user.role["name"] == UserRoles.ADMIN) {
                 throw new ExceptionResponse(403, MESSAGES.ACCOUNREGISTERBEFORET);
             }
         } else {
             user = await this.userService.createAccountGoogle(body);
         }
 
-        const payload = { google_id: google_id };
+        const payload = { google_id: google_id, email: email };
         const token = await this.autoGenerateToken(payload);
 
         return { user, token };

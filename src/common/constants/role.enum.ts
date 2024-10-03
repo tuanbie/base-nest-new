@@ -4,3 +4,8 @@ export enum UserRoles {
     DRIVER = "DRIVER",
     TRANSPORT = "TRANSPORT",
 }
+
+export enum RoleFilter {
+    USER = "USER",
+    ADMIN = "ADMIN",
+}

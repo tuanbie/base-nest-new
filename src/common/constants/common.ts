@@ -30,7 +30,7 @@ export const MESSAGES = {
     CONFIRMED_ACCOUNT: "This account is confirmed",
     UNCONFIRMED_ACCOUNT: "Please verify your email",
     ROLE_NOT_FOUND: "role_not_found",
-    EMAIL_EXISTS: "Email or username exist",
+    EMAIL_EXISTS: "Email is exist",
     RESEND_SUCCESS: "Resend successfully",
     SENT_EMAIL_TO_RECOVER_PASSWORD: "Email sent",
     FAVORITE_IS_EXITS: "Favorite is exits",

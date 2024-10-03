@@ -1,7 +1,7 @@
-import { Body, ClassSerializerInterceptor, Get, Patch, Post, UseInterceptors } from "@nestjs/common";
+import { Body, ClassSerializerInterceptor, Get, Patch, Post, Query, UseInterceptors } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { CustomController } from "@common/decorators/custom-controller.decorator";
-import { CreateUserDto, UpdateUserDto } from "./dto/input.dto";
+import { CreateUserDto, FilterUserDto, UpdateUserDto } from "./dto/input.dto";
 import { Authorize } from "@common/decorators/authorize.decorator";
 import { UserRoles } from "@common/constants/role.enum";
 import { CurrentUser } from "@common/decorators/current-user.decorator";
@@ -11,12 +11,6 @@ import { MESSAGES } from "@common/constants";
 @CustomController("user")
 export class UserController {
     constructor(private readonly userService: UserService) {}
-
-    @Get("filter")
-    @UseInterceptors(ClassSerializerInterceptor)
-    public async filter(): Promise<any> {
-        return await this.userService.filter();
-    }
 
     @Post("create")
     @UseInterceptors(ClassSerializerInterceptor)
@@ -30,7 +24,15 @@ export class UserController {
     @UseInterceptors(ClassSerializerInterceptor)
     @Authorize(UserRoles.CUSTOMER, UserRoles.ADMIN, UserRoles.DRIVER, UserRoles.TRANSPORT)
     async updateMe(@Body() body: UpdateUserDto, @CurrentUser() user: ICurrentUser) {
-        console.log(user);
-        await this.userService.updateUser(body, user.email);
+        await this.userService.updateUser(body, user);
+        return { message: MESSAGES.UPDATE_SUCCEED };
+    }
+
+    @Get("filter")
+    @UseInterceptors(ClassSerializerInterceptor)
+    @Authorize(UserRoles.ADMIN)
+    async filterUser(@Query() filter: FilterUserDto) {
+        console.log(filter);
+        return await this.userService.filterUser(filter);
     }
 }

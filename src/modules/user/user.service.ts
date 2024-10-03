@@ -2,10 +2,10 @@ import { User } from "@common/models/entity/user.entity";
 import { ConflictException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { AccountTypeEnum, ActivateEnum, MESSAGES, UserRoles } from "@common/constants";
+import { AccountTypeEnum, ActivateEnum, MESSAGES, RoleFilter, UserRoles } from "@common/constants";
 import { hashing } from "@common/utils/hashing.util";
 import { LoginGoogleDto } from "@modules/auth/dtos/login.dto";
-import { CreateUserDto, UpdateUserDto } from "./dto/input.dto";
+import { CreateUserDto, FilterUserDto, UpdateUserDto } from "./dto/input.dto";
 import { CreateHistoryDto } from "@modules/history/dto/create-history.dto";
 import { HistoryService } from "@modules/history/history.service";
 import { ExceptionResponse } from "@common/exceptions/response.exception";
@@ -27,17 +27,17 @@ export class UserService {
     }
 
     async create(body: CreateUserDto, adminId: number): Promise<any> {
-        const { username, password } = body;
+        const { email, password } = body;
 
         const newUser = this.userRepository.create(body);
-        newUser.username = username;
-        newUser.email = username;
+        newUser.email = email;
         newUser.password = await hashing(password);
         newUser.is_activate = ActivateEnum.ACCEPT;
         newUser.role = 1;
         const getUser = await this.userRepository.findOne({
-            where: { username: username },
+            where: { email: email },
         });
+
         if (getUser) {
             throw new ConflictException(MESSAGES.ACCOUNTEXIST);
         }
@@ -58,11 +58,10 @@ export class UserService {
     async filter(): Promise<any> {
         const newUser = await this.userRepository.find({
             where: {
-                username: "chungdi",
+                email: "chungdi",
             },
             relations: ["role"],
         });
-        console.log(newUser);
         return newUser;
     }
 
@@ -87,11 +86,6 @@ export class UserService {
         return user;
     }
 
-    async createUser(data: LoginGoogleDto) {
-        const { google_id } = data;
-        const newUser = this.userRepository.create();
-    }
-
     async createAccountGoogle(body: LoginGoogleDto) {
         const { accountType } = body;
         const newUser = this.userRepository.create(body);
@@ -110,14 +104,53 @@ export class UserService {
         return user;
     }
 
-    async updateUser(body: UpdateUserDto, email: string) {
-        const findUser = await this.userRepository.findOne({ where: { email } });
-        if (!findUser) {
-            throw new ExceptionResponse(404, MESSAGES.NOT_FOUND_USER);
-        }
-        const newDataUser = this.userRepository.merge(findUser, body);
+    async updateUser(body: UpdateUserDto, user: User) {
+        // const findUser = await this.userRepository.findOne({ where: { email } });
+        // console.log(findUser);
+        // if (!findUser) {
+        //     throw new ExceptionResponse(404, MESSAGES.NOT_FOUND_USER);
+        // }
+        const newDataUser = this.userRepository.merge(user, body);
+        console.log(newDataUser);
 
         await this.userRepository.save(newDataUser);
         return;
+    }
+
+    async filterUser(filter: FilterUserDto) {
+        const { page, limit, search, sort, role } = filter;
+        const listUser = this.userRepository
+            .createQueryBuilder("user")
+            .leftJoinAndSelect("user.role", "role")
+            .select([
+                "user.id",
+                "user.name",
+                "user.email",
+                "user.avatar",
+                "user.gender",
+                "user.is_activate",
+                "user.account_type",
+                "user.BOD",
+                "user.google_id",
+                "user.token_google",
+                "user.created_at",
+                "user.phone",
+            ]);
+        if (role == RoleFilter.ADMIN) {
+            listUser.andWhere("role.id = :id", { id: 1 });
+        } else {
+            listUser.andWhere("role.id != :id", { id: 1 });
+        }
+        if (search) {
+            listUser.andWhere("UPPER(user.name) LIKE UPPER(:search)", { search: search });
+        }
+
+        if (page) listUser.skip((page - 1) * limit);
+        if (limit) listUser.take(limit);
+        listUser.orderBy("user.created_at", "DESC");
+
+        const users = await listUser.getMany();
+
+        return users;
     }
 }

@@ -34,9 +34,6 @@ export class User extends BaseEntity {
     @Column({ type: "enum", enum: ActivateEnum })
     is_activate: ActivateEnum;
 
-    @Column({ type: "varchar", nullable: true })
-    username: string;
-
     @Column({ type: "date", nullable: true })
     delete_at: Date;
 
