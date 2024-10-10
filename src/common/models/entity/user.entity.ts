@@ -4,6 +4,8 @@ import { BaseEntity } from "./base.entity";
 import { Role } from "./role.entity";
 import { ActivateEnum, DriverTypeEnum } from "@common/constants/global.enum";
 import { ActivateHistory } from "./history.entity";
+import { Booking } from "./booking.entity";
+import { Feedback } from "./feedback.entity";
 
 @CustomEntity(User.name)
 export class User extends BaseEntity {
@@ -55,4 +57,13 @@ export class User extends BaseEntity {
 
     @OneToMany(() => ActivateHistory, (history) => history.user)
     history: ActivateHistory[];
+
+    @OneToMany(() => Booking, (booking) => booking.driver)
+    driver: Booking[];
+
+    @OneToMany(() => Booking, (booking) => booking.customer)
+    customer: Booking[];
+
+    @OneToMany(() => Feedback, (feedback) => feedback.sender)
+    sender: Feedback[];
 }
