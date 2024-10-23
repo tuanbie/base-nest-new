@@ -29,10 +29,7 @@ async function bootstrap() {
     app.connectMicroservice<MicroserviceOptions>({
         transport: Transport.RMQ,
         options: {
-            urls: [
-                process.env.RABBITMQ_URL ||
-                    "amqps://sxutciga:w9r7AukdcBfOjNx31yJczD46F-G0RzWa@stingray.rmq.cloudamqp.com/sxutciga",
-            ],
+            urls: [process.env.RABBITMQ_URL],
             queue: "main_queue",
             queueOptions: { durable: true },
         },
